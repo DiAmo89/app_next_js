@@ -1,4 +1,5 @@
 import { Product } from "@/common/types/Product";
+import ProductCarousel from "@/components/product-carousel";
 import { notFound } from "next/navigation";
 
 async function fetchProduct(id: string): Promise<Product> {
@@ -22,6 +23,7 @@ const ProductPage = async ({ params }: { params: Promise<{ id: string }> }) => {
   return (
     <div>
       <h2>{product.title}</h2>
+      <ProductCarousel images={product.images} />
     </div>
   );
 };
