@@ -1,4 +1,5 @@
 import Link from "next/link";
+import SignInSignOut from "../sign-in-sign-out";
 
 const links = [
   { href: "/about", text: "Learn about us" },
@@ -9,8 +10,9 @@ const links = [
   { href: "/products", text: "Products" },
   { href: "/categories", text: "Categories" },
   { href: "/news", text: "News" },
-  { href: "/reviews", text: "Reviews" }
-
+  { href: "/reviews", text: "Reviews" },
+  { href: "/profile", text: "Profile" },
+  { href: "/todos/new", text: "AddTod" },
 ];
 
 const generalLinks = links.map(({ href, text }) => (
@@ -21,6 +23,9 @@ const generalLinks = links.map(({ href, text }) => (
 
 export default function NavBar() {
   return (
-    <nav className="w-full flex justify-center gap-2 my-4">{generalLinks}</nav>
+    <nav className="w-full flex justify-center gap-2 my-4">
+      {generalLinks}
+      <SignInSignOut />
+    </nav>
   );
 }
