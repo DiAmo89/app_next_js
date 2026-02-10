@@ -23,12 +23,17 @@ export const authOptions = {
     }) {
       if (account && profile) {
         token.googleId = profile.sub;
-        const existing = await db.query.users.findFirst({
-          where: (u, { eq }) => eq(u.email, profile.email!),
-        });
-        if (existing) {
-          token.role = existing.role;
-          token.id = existing.id;
+        try {
+          const existing = await db.query.users.findFirst({
+            where: (u, { eq }) => eq(u.email, profile.email!),
+          });
+          if (existing) {
+            token.role = existing.role;
+            token.id = existing.id;
+          }
+        } catch (error) {
+          // Database unavailable - continue without DB data
+          console.warn("Database unavailable during JWT callback:", error);
         }
       }
       return token;
@@ -37,15 +42,14 @@ export const authOptions = {
       if (token.googleId) {
         session.user = {
           ...session.user,
-          // hello: "Hello!!!!",
-          googleId: token.googleId,
+          googleId: token.googleId as string,
         };
       }
       if (token.role) {
-        session.user.role = token.role;
+        session.user.role = token.role as string;
       }
       if (token.id) {
-        session.user.id = token.id;
+        session.user.id = token.id as number;
       }
       return session;
     },
@@ -54,16 +58,21 @@ export const authOptions = {
       if (!user.email) {
         return false;
       }
-      const existing = await db.query.users.findFirst({
-        where: (u, { eq }) => eq(user.email, u.email),
-      });
-      if (!existing) {
-        await db.insert(users).values({
-          email: user.email,
-          name: user.name,
-          image: user.image,
-          role: "customer",
+      try {
+        const existing = await db.query.users.findFirst({
+          where: (u, { eq }) => eq(user.email, u.email),
         });
+        if (!existing) {
+          await db.insert(users).values({
+            email: user.email,
+            name: user.name,
+            image: user.image,
+            role: "customer",
+          });
+        }
+      } catch (error) {
+        // Database unavailable - allow login anyway
+        console.warn("Database unavailable during sign-in:", error);
       }
       return true;
     },

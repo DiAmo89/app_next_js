@@ -33,3 +33,4 @@ export const todos = pgTable("todos", {
     .notNull()
     .references(() => users.id, { onDelete: "cascade" }),
 });
+
