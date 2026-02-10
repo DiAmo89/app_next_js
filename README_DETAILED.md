@@ -32,12 +32,14 @@ A full-stack Next.js 16 application featuring Google OAuth authentication, Supab
 ## ✨ Features
 
 ### 🔐 Authentication
+
 - **Google OAuth 2.0** integration via NextAuth.js
 - Secure session management with JWT tokens
 - Persistent user sessions with database storage
 - Graceful error handling when database is unavailable
 
 ### 🎨 User Interface
+
 - **Modern, responsive design** with Tailwind CSS v4
 - **Light/Dark mode toggle** with `next-themes`
 - Smooth animations and transitions
@@ -47,6 +49,7 @@ A full-stack Next.js 16 application featuring Google OAuth authentication, Supab
 ### 📱 Pages & Features
 
 #### Public Pages
+
 - **Home** - Hero section with CTAs for products, reviews, and community
 - **Products** - Catalog with product cards and carousel
 - **Categories** - Browse products by category
@@ -57,12 +60,14 @@ A full-stack Next.js 16 application featuring Google OAuth authentication, Supab
 - **Career** - Career opportunities
 
 #### Authenticated Pages
+
 - **Profile** - User profile management
 - **Reviews** - Read and write product reviews
 - **Todos** - Personal todo/task management
 - **Users** - Community members directory
 
 #### Special Features
+
 - **Reviews Page** - Split layout with:
   - LEFT: Form to add new reviews (fixed width column)
   - RIGHT: List of all reviews from community
@@ -72,6 +77,7 @@ A full-stack Next.js 16 application featuring Google OAuth authentication, Supab
 - **Responsive Navbar** - Desktop dropdown menus + mobile support
 
 ### 🗄️ Database
+
 - PostgreSQL with Drizzle ORM
 - Automatic schema management with Drizzle Kit
 - Tables for: users, posts, reviews, todos
@@ -79,6 +85,7 @@ A full-stack Next.js 16 application featuring Google OAuth authentication, Supab
 - Type-safe database queries
 
 ### ⚠️ Error Handling
+
 - Graceful database connection failures
 - User-friendly error messages
 - Console warnings for debugging
@@ -90,6 +97,7 @@ A full-stack Next.js 16 application featuring Google OAuth authentication, Supab
 ## 🛠 Tech Stack
 
 ### Frontend
+
 - **Next.js 16.1.4** - React framework with App Router
 - **React 19.2.3** - UI library
 - **TypeScript** - Type safety
@@ -98,16 +106,19 @@ A full-stack Next.js 16 application featuring Google OAuth authentication, Supab
 - **Lucide React** - Beautiful icons
 
 ### Backend
+
 - **Next.js API Routes** - Serverless functions
 - **NextAuth.js 4.24.13** - Authentication
 - **Drizzle ORM 0.45.1** - Database ORM
 
 ### Database
+
 - **Supabase** - PostgreSQL hosting
 - **PostgreSQL** - Relational database
 - **Drizzle Kit** - Schema migration tool
 
 ### UI Components
+
 - **Radix UI** - Headless UI primitives
 - **Embla Carousel** - Carousel component
 - **Custom Components** - Tailored solutions
@@ -196,6 +207,7 @@ immobilien_app/
 ## 🚀 Installation
 
 ### Prerequisites
+
 - Node.js 18+ (Recommended: 20 LTS)
 - npm or yarn
 - Git
@@ -316,6 +328,7 @@ npm run lint
 ### Schema Overview
 
 #### Users Table
+
 ```sql
 CREATE TABLE users (
   id SERIAL PRIMARY KEY,
@@ -328,6 +341,7 @@ CREATE TABLE users (
 ```
 
 #### Posts Table (Forum)
+
 ```sql
 CREATE TABLE posts (
   id SERIAL PRIMARY KEY,
@@ -338,6 +352,7 @@ CREATE TABLE posts (
 ```
 
 #### Reviews Table
+
 ```sql
 CREATE TABLE reviews (
   id SERIAL PRIMARY KEY,
@@ -348,6 +363,7 @@ CREATE TABLE reviews (
 ```
 
 #### Todos Table
+
 ```sql
 CREATE TABLE todos (
   id SERIAL PRIMARY KEY,
@@ -373,17 +389,17 @@ const posts = await db.select().from(postsTable);
 // Insert new post
 await db.insert(postsTable).values({
   title: "Post Title",
-  text: "Post content"
+  text: "Post content",
 });
 
 // Update post
-await db.update(postsTable)
+await db
+  .update(postsTable)
   .set({ title: "New Title" })
   .where(eq(postsTable.id, 1));
 
 // Delete post
-await db.delete(postsTable)
-  .where(eq(postsTable.id, 1));
+await db.delete(postsTable).where(eq(postsTable.id, 1));
 ```
 
 ---
@@ -443,39 +459,39 @@ export default async function ProtectedPage() {
 
 ### Public Routes
 
-| Route | Component | Description |
-|-------|-----------|-------------|
-| `/` | Home | Landing page with hero section |
-| `/products` | Products Catalog | Product listing page |
-| `/categories` | Categories | Browse by category |
-| `/news` | Forum | Community forum discussions |
-| `/about` | About | About page |
-| `/about/me` | About Me | Personal info |
-| `/more` | More Features | Counter and additional features |
-| `/learning-grid` | Learning | Grid-based resources |
-| `/career` | Career | Job opportunities |
-| `/login` | Login | Login page |
+| Route            | Component        | Description                     |
+| ---------------- | ---------------- | ------------------------------- |
+| `/`              | Home             | Landing page with hero section  |
+| `/products`      | Products Catalog | Product listing page            |
+| `/categories`    | Categories       | Browse by category              |
+| `/news`          | Forum            | Community forum discussions     |
+| `/about`         | About            | About page                      |
+| `/about/me`      | About Me         | Personal info                   |
+| `/more`          | More Features    | Counter and additional features |
+| `/learning-grid` | Learning         | Grid-based resources            |
+| `/career`        | Career           | Job opportunities               |
+| `/login`         | Login            | Login page                      |
 
 ### Protected Routes (Requires Auth)
 
-| Route | Component | Description |
-|-------|-----------|-------------|
-| `/profile` | Profile | User profile page |
-| `/reviews` | Reviews | Reviews page with split layout |
-| `/reviews/new` | New Review | Create review page |
-| `/todos` | Todos | Todo list management |
-| `/todos/new` | New Todo | Create todo page |
-| `/users` | Users | Community members |
+| Route          | Component  | Description                    |
+| -------------- | ---------- | ------------------------------ |
+| `/profile`     | Profile    | User profile page              |
+| `/reviews`     | Reviews    | Reviews page with split layout |
+| `/reviews/new` | New Review | Create review page             |
+| `/todos`       | Todos      | Todo list management           |
+| `/todos/new`   | New Todo   | Create todo page               |
+| `/users`       | Users      | Community members              |
 
 ### API Routes
 
-| Endpoint | Method | Purpose |
-|----------|--------|---------|
-| `/api/auth/signin/:provider` | POST | Sign in |
-| `/api/auth/callback/:provider` | GET | OAuth callback |
-| `/api/auth/session` | GET | Get session |
-| `/api/auth/signout` | POST | Sign out |
-| `/api/auth/providers` | GET | List providers |
+| Endpoint                       | Method | Purpose        |
+| ------------------------------ | ------ | -------------- |
+| `/api/auth/signin/:provider`   | POST   | Sign in        |
+| `/api/auth/callback/:provider` | GET    | OAuth callback |
+| `/api/auth/session`            | GET    | Get session    |
+| `/api/auth/signout`            | POST   | Sign out       |
+| `/api/auth/providers`          | GET    | List providers |
 
 ---
 
@@ -484,37 +500,44 @@ export default async function ProtectedPage() {
 ### Key Components
 
 #### Navigation (nav-bar)
+
 - Desktop navigation with dropdown menus
 - Mobile-responsive hamburger menu
 - Links to all main pages
 - "More" dropdown for additional features
 
 #### Sign In/Out (sign-in-sign-out)
+
 - Conditional rendering based on auth state
 - Google OAuth button when not signed in
 - User avatar and sign out button when signed in
 
 #### Themes Toggle (themes-toggle)
+
 - Light/dark mode switcher
 - Smooth transitions
 - Persisted user preference
 
 #### Counter (counter)
+
 - Interactive increment/decrement buttons
 - State management with React hooks
 - Styled with Tailwind CSS
 
 #### Forum (forum)
+
 - Display forum posts
 - Error handling for database failures
 - Delete button for posts
 
 #### Product Card (product-card)
+
 - Display product information
 - Image carousel
 - Add to cart functionality
 
 #### Forms
+
 - **CreatePostForm** - Forum post creation
 - **CreateReviewForm** - Review submission
 - **CreateTodoForm** - Todo creation
@@ -529,15 +552,15 @@ The project uses Tailwind CSS v4 with updated syntax:
 
 ```tsx
 // Color utilities
-className="bg-linear-to-r from-green-600 to-green-700"  // Gradients
-className="text-black dark:text-white"                   // Dark mode
-className="hover:shadow-lg transition-shadow"             // Hover + transitions
+className = "bg-linear-to-r from-green-600 to-green-700"; // Gradients
+className = "text-black dark:text-white"; // Dark mode
+className = "hover:shadow-lg transition-shadow"; // Hover + transitions
 
 // Responsive design
-className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3"  // Responsive grid
+className = "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3"; // Responsive grid
 
 // Spacing & sizing
-className="px-4 py-2 rounded-lg"                         // Padding & radius
+className = "px-4 py-2 rounded-lg"; // Padding & radius
 ```
 
 ### Dark Mode
@@ -552,11 +575,7 @@ Dark mode is enabled via `next-themes`:
 
 <html lang="en" suppressHydrationWarning>
   <body>
-    <ThemeProvider
-      attribute="class"
-      defaultTheme="system"
-      enableSystem
-    >
+    <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
       {/* Content */}
     </ThemeProvider>
   </body>
@@ -578,12 +597,14 @@ Dark mode is enabled via `next-themes`:
 ### Deploy to Other Platforms
 
 #### Netlify
+
 ```bash
 npm run build
 # Deploy 'out' directory
 ```
 
 #### Docker
+
 ```dockerfile
 FROM node:20-alpine
 WORKDIR /app
@@ -598,6 +619,7 @@ CMD ["npm", "start"]
 ### Environment Variables for Production
 
 Set these in your hosting platform:
+
 - `DATABASE_URL`
 - `NEXTAUTH_SECRET`
 - `NEXTAUTH_URL` (use production URL)
@@ -611,17 +633,20 @@ Set these in your hosting platform:
 ### Common Issues
 
 #### 1. Database Connection Error
+
 ```
 Error: getaddrinfo ENOTFOUND db.supabase.co
 ```
 
 **Solution:**
+
 - Check internet connection
 - Verify DATABASE_URL is correct
 - Check Supabase firewall settings
 - Add your IP to Supabase IP whitelist
 
 #### 2. Port 3000 Already in Use
+
 ```bash
 # Kill process on port 3000
 lsof -ti:3000 | xargs kill -9  # macOS/Linux
@@ -629,17 +654,20 @@ Get-Process -Id (Get-NetTCPConnection -LocalPort 3000).OwningProcess | Stop-Proc
 ```
 
 #### 3. Lock File Issues
+
 ```bash
 rm -rf .next
 npm run dev
 ```
 
 #### 4. NextAuth Errors
+
 - Ensure `NEXTAUTH_SECRET` is set
 - Verify `NEXTAUTH_URL` matches your domain
 - Check Google credentials are correct
 
 #### 5. Theme Not Persisting
+
 - Check `next-themes` is properly configured
 - Ensure `suppressHydrationWarning` is on `<html>`
 - Clear browser cache and localStorage
@@ -705,6 +733,7 @@ This project is licensed under the MIT License - see LICENSE file for details.
 ## 👥 Support
 
 For support:
+
 1. Check the troubleshooting section
 2. Open an issue on GitHub
 3. Check existing issues/discussions
@@ -735,7 +764,7 @@ For support:
 ✅ Todo management  
 ✅ User profiles  
 ✅ Error handling  
-✅ Graceful database failure handling  
+✅ Graceful database failure handling
 
 ### Future Enhancements
 

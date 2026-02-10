@@ -1,24 +1,26 @@
 import { db } from "@/db";
 import { users } from "@/db/schema";
+import type { NextAuthOptions } from "next-auth";
 import { Account, Profile, Session } from "next-auth";
 import { JWT } from "next-auth/jwt";
 import GoogleProvider from "next-auth/providers/google";
 
-// Log environment for debugging
-console.log("🔐 Auth Config - NEXTAUTH_URL:", process.env.NEXTAUTH_URL);
-console.log("🔐 Auth Config - NODE_ENV:", process.env.NODE_ENV);
-
-export const authOptions = {
+export const authOptions: NextAuthOptions = {
   providers: [
     GoogleProvider({
-      clientId: process.env.GOOGLE_CLIENT_ID!,
-      clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
+      clientId: process.env.GOOGLE_CLIENT_ID || "",
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET || "",
+      allowDangerousEmailAccountLinking: true,
     }),
   ],
   secret: process.env.NEXTAUTH_SECRET,
+  session: {
+    strategy: "jwt",
+    maxAge: 30 * 24 * 60 * 60, // 30 days
+  },
   pages: {
     signIn: "/login",
-    error: "/api/auth/error",
+    error: "/login",
   },
   callbacks: {
     async jwt({
@@ -30,82 +32,61 @@ export const authOptions = {
       account?: Account | null;
       profile?: Profile | null;
     }) {
+      // Initial sign in
       if (account && profile) {
-        token.googleId = profile.sub;
-        token.email = profile.email;
-        console.log("🔐 JWT Callback - Profile email:", profile.email);
+        token.sub = profile.sub;
+        token.email = profile.email || "";
+        token.name = profile.name || "";
+        
         try {
           const existing = await db.query.users.findFirst({
             where: (u, { eq }) => eq(u.email, profile.email!),
           });
           if (existing) {
-            console.log("✅ User found in DB:", existing.email);
             token.role = existing.role;
-            token.id = existing.id;
-          } else {
-            console.log("ℹ️ User not found in DB yet (will be created in signIn)");
+            token.userId = existing.id;
           }
         } catch (error) {
-          // Database unavailable - continue without DB data
-          console.warn("⚠️ Database unavailable during JWT callback:", error);
+          console.warn("⚠️ Database query failed in JWT:", error);
         }
       }
       return token;
     },
     async session({ session, token }: { session: Session; token: JWT }) {
-      console.log("🔄 Session callback - Token:", token);
-      
       if (session.user) {
-        if (token.email) {
-          session.user.email = token.email as string;
-        }
-        if (token.googleId) {
-          session.user = {
-            ...session.user,
-            googleId: token.googleId as string,
-          };
-        }
-        if (token.role) {
-          session.user.role = token.role as string;
-        }
-        if (token.id) {
-          session.user.id = token.id as number;
-        }
+        session.user.email = token.email;
+        session.user.name = token.name;
+        // @ts-ignore - extend session with custom fields
+        session.user.id = token.userId;
+        // @ts-ignore
+        session.user.role = token.role || "customer";
       }
-      
-      console.log("✅ Session updated:", session.user?.email);
       return session;
     },
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    async signIn({ user }: { user: any }) {
-      if (!user.email) {
-        console.error("❌ Sign-in failed: No email provided");
-        return false;
+    async signIn({ user, account }: { user: any; account: any }) {
+      if (!user?.email) {
+        return "/login?error=no_email";
       }
-      
-      console.log("📧 Sign-in attempt - Email:", user.email, "Name:", user.name);
-      
+
       try {
         const existing = await db.query.users.findFirst({
           where: (u, { eq }) => eq(u.email, user.email),
         });
-        
+
         if (!existing) {
-          console.log("📝 New user - Creating in database:", user.email);
-          const result = await db.insert(users).values({
+          await db.insert(users).values({
             email: user.email,
             name: user.name || "User",
             image: user.image || null,
             role: "customer",
-          }).returning();
-          console.log("✅ User created successfully:", result);
-        } else {
-          console.log("✅ User already exists:", existing.email);
+          });
         }
       } catch (error) {
-        // Database unavailable - allow login anyway
-        console.error("❌ Database unavailable during sign-in:", error);
+        console.error("❌ SignIn error:", error);
+        // Allow sign-in even if database fails
       }
+
       return true;
     },
   },
